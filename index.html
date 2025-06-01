@@ -42,134 +42,513 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Thulsara Fisher Company Chatbot</title>
+    <title>Chanuk Tea Chatbot</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f0f4f8;
+        /* Chatbot Widget Styling */
+        .chatbot-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 450px;
+            height: 700px;
+            background-color: #f8f1e9;
+            border-radius: 20px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+            display: none;
+            flex-direction: column;
+            font-family: 'Georgia', serif;
+            transition: background 0.3s ease;
         }
-        .chat-container {
-            width: 100%;
-            max-width: 400px;
-            margin: 20px auto;
-            background: #fff;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
-        }
-        .chat-header {
-            background: #2c3e50;
+        .chatbot-header {
+            background-color: #3a5a40;
             color: white;
             padding: 15px;
-            text-align: center;
-            font-size: 18px;
+            border-top-left-radius: 20px;
+            border-top-right-radius: 20px;
+            font-size: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
-        .chat-box {
-            height: 400px;
-            overflow-y: auto;
+        .chatbot-body {
+            flex: 1;
             padding: 15px;
-            background: #f9f9f9;
+            overflow-y: auto;
+            background-color: #fff;
+            position: relative;
         }
-        .message {
-            margin: 10px 0;
-            padding: 10px;
-            border-radius: 5px;
-            max-width: 80%;
+        .chatbot-message {
+            margin: 10px;
+            padding: 12px;
+            border-radius: 12px;
+            max-width: 85%;
+            line-height: 1.4;
+            position: relative;
         }
         .user-message {
-            background: #3498db;
+            background-color: #3a5a40;
             color: white;
             margin-left: auto;
-            text-align: right;
         }
         .bot-message {
-            background: #ecf0f1;
-            color: #2c3e50;
-            margin-right: auto;
+            background-color: #e6e6e6;
+            color: black;
         }
-        .input-container {
+        .message-timestamp {
+            font-size: 10px;
+            color: #666;
+            margin-top: 5px;
+            text-align: right;
+        }
+        .bot-image, .user-image {
+            max-width: 100%;
+            border-radius: 10px;
+            margin: 10px 0;
+        }
+        .user-document {
+            margin: 10px;
+            padding: 10px;
+            background-color: #e6e6e6;
+            border-radius: 10px;
+            max-width: 85%;
+        }
+        .user-document a {
+            color: #3a5a40;
+            text-decoration: none;
+        }
+        .quick-buttons {
             display: flex;
-            padding: 10px;
-            border-top: 1px solid #ddd;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 10px;
         }
-        #user-input {
-            flex: 1;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            outline: none;
-        }
-        #send-btn {
-            padding: 10px 15px;
-            margin-left: 10px;
-            background: #3498db;
+        .quick-button {
+            background-color: #588157;
             color: white;
             border: none;
-            border-radius: 5px;
+            padding: 8px 12px;
+            border-radius: 15px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.2s;
+        }
+        .quick-button:hover {
+            background-color: #4a7043;
+        }
+        .carousel {
+            display: flex;
+            overflow-x: auto;
+            gap: 10px;
+            padding: 10px;
+            margin: 10px;
+            background-color: #f8f1e9;
+            border-radius: 10px;
+        }
+        .carousel img {
+            width: 120px;
+            height: 120px;
+            object-fit: cover;
+            border-radius: 10px;
             cursor: pointer;
         }
-        #send-btn:hover {
-            background: #2980b9;
+        .typing-indicator {
+            display: none;
+            margin: 10px;
+            font-size: 12px;
+            color: #666;
+        }
+        .typing-indicator span {
+            animation: blink 1s infinite;
+        }
+        .typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
+        .typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+        .chatbot-input {
+            display: flex;
+            flex-wrap: wrap;
+            padding: 10px;
+            border-top: 1px solid #ddd;
+            background-color: #f8f1e9;
+        }
+        .chatbot-input input[type="text"] {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 20px;
+            outline: none;
+            background-color: #fff;
+            margin-bottom: 10px;
+        }
+        .chatbot-input button, .chatbot-input label, .settings-button {
+            padding: 12px;
+            margin-left: 10px;
+            background-color: #3a5a40;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.2s;
+        }
+        .chatbot-input button:hover, .chatbot-input label:hover, .settings-button:hover {
+            background-color: #4a7043;
+        }
+        .chatbot-input input[type="file"] {
+            display: none;
+        }
+        .chatbot-toggle {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #3a5a40;
+            color: white;
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            font-size: 24px;
+        }
+        .voice-button, .settings-button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 18px;
+            margin-left: 10px;
+        }
+        .settings-menu {
+            display: none;
+            position: absolute;
+            top: 50px;
+            right: 10px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            padding: 10px;
+            z-index: 10;
+        }
+        .settings-menu button {
+            display: block;
+            width: 100%;
+            padding: 8px;
+            border: none;
+            background: none;
+            text-align: left;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .settings-menu button:hover {
+            background-color: #e6e6e6;
+        }
+        /* Background Options */
+        .bg-gradient {
+            background: linear-gradient(135deg, #3a5a40, #a3b18a);
+        }
+        .bg-tea-image {
+            background-image: url('https://images.unsplash.com/photo-1515825838459-94f99c4a6e08?ixlib=rb-4.0.3&auto=format&fit=crop&w=450');
+            background-size: cover;
+            background-position: center;
+        }
+        .bg-solid {
+            background-color: #f8f1e9;
         }
     </style>
 </head>
 <body>
-    <div class="chat-container">
-        <div class="chat-header">Thulsara Fisher Company Chatbot</div>
-        <div class="chat-box" id="chat-box">
-            <div class="message bot-message">Welcome to Thulsara Fisher Company! How can I assist you today? Type 'products', 'contact', or 'about' to learn more.</div>
+    <div class="chatbot-toggle" onclick="toggleChatbot()">☕</div>
+    <div class="chatbot-container bg-solid" id="chatbot">
+        <div class="chatbot-header">
+            Chanuk Tea Assistant
+            <div>
+                <button class="voice-button" onclick="toggleVoice()">🎤</button>
+                <button class="settings-button" onclick="toggleSettings()">⚙️</button>
+            </div>
         </div>
-        <div class="input-container">
-            <input type="text" id="user-input" placeholder="Type your message...">
-            <button id="send-btn">Send</button>
+        <div class="settings-menu" id="settings-menu">
+            <button onclick="changeBackground('bg-gradient')">Gradient</button>
+            <button onclick="changeBackground('bg-tea-image')">Tea Image</button>
+            <button onclick="changeBackground('bg-solid')">Solid Color</button>
+            <button onclick="exportChat()">Export Chat</button>
+        </div>
+        <div class="chatbot-body" id="chatbot-body">
+            <div class="chatbot-message bot-message">Welcome to Chanuk Tea! Explore our teas, upload order details, or customize the chat!</div>
+            <div class="quick-buttons">
+                <button class="quick-button" onclick="sendQuickMessage('Show me green tea')">Green Tea</button>
+                <button class="quick-button" onclick="sendQuickMessage('Show me black tea')">Black Tea</button>
+                <button class="quick-button" onclick="sendQuickMessage('Show me herbal tea')">Herbal Tea</button>
+                <button class="quick-button" onclick="sendQuickMessage('Order status')">Order Status</button>
+            </div>
+        </div>
+        <div class="chatbot-input">
+            <input type="text" id="user-input" placeholder="Ask about our teas...">
+            <button onclick="sendMessage()">Send</button>
+            <label for="image-upload">📷 Image</label>
+            <input type="file" id="image-upload" accept="image/*" onchange="handleImageUpload(event)">
+            <label for="document-upload">📄 Doc</label>
+            <input type="file" id="document-upload" accept=".pdf" onchange="handleDocumentUpload(event)">
         </div>
     </div>
 
     <script>
-        const chatBox = document.getElementById('chat-box');
-        const userInput = document.getElementById('user-input');
-        const sendBtn = document.getElementById('send-btn');
-
-        function addMessage(text, sender) {
-            const messageDiv = document.createElement('div');
-            messageDiv.classList.add('message', sender);
-            messageDiv.textContent = text;
-            chatBox.appendChild(messageDiv);
-            chatBox.scrollTop = chatBox.scrollHeight;
+        // Toggle chatbot visibility
+        function toggleChatbot() {
+            const chatbot = document.getElementById('chatbot');
+            chatbot.style.display = chatbot.style.display === 'flex' ? 'none' : 'flex';
         }
 
-        function getBotResponse(input) {
-            input = input.toLowerCase().trim();
-            const responses = {
-                'products': 'We offer a variety of fresh seafood including tuna, salmon, shrimp, and crabs. All are sustainably sourced from local waters.',
-                'contact': 'Reach us at: Thulsara Fisher Company, 123 Ocean Drive, Coastal City. Email: info@thulsarafisher.com | Phone: (555) 123-4567',
-                'about': 'Thulsara Fisher Company is a family-owned business dedicated to providing high-quality, sustainable seafood since 1995.',
-                'hours': 'We are open Monday to Saturday, 8 AM to 6 PM.',
-                'delivery': 'We offer delivery within a 50-mile radius. Contact us for details!',
-                'default': 'Sorry, I didn’t understand that. Try typing "products", "contact", "about", "hours", or "delivery".'
-            };
-            return responses[input] || responses['default'];
+        // Toggle settings menu
+        function toggleSettings() {
+            const menu = document.getElementById('settings-menu');
+            menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
         }
 
-        sendBtn.addEventListener('click', () => {
-            const userText = userInput.value;
-            if (userText.trim()) {
-                addMessage(userText, 'user-message');
-                const botResponse = getBotResponse(userText);
-                setTimeout(() => addMessage(botResponse, 'bot-message'), 500);
-                userInput.value = '';
-            }
-        });
+        // Change background
+        function changeBackground(className) {
+            const chatbot = document.getElementById('chatbot');
+            chatbot.className = `chatbot-container ${className}`;
+            toggleSettings();
+        }
 
-        userInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter' && userInput.value.trim()) {
-                addMessage(userInput.value, 'user-message');
-                const botResponse = getBotResponse(userInput.value);
-                setTimeout(() => addMessage(botResponse, 'bot-message'), 500);
-                userInput.value = '';
+        // Send user text message and get bot response
+        async function sendMessage() {
+            const input = document.getElementById('user-input');
+            const chatbotBody = document.getElementById('chatbot-body');
+            const message = input.value.trim();
+
+            if (message) {
+                // Add user message with timestamp
+                const userMessage = document.createElement('div');
+                userMessage.className = 'chatbot-message user-message';
+                userMessage.textContent = message;
+                userMessage.innerHTML += `<div class="message-timestamp">${new Date().toLocaleTimeString()}</div>`;
+                chatbotBody.appendChild(userMessage);
+
+                // Show typing indicator
+                const typingIndicator = document.createElement('div');
+                typingIndicator.className = 'typing-indicator';
+                typingIndicator.innerHTML = 'Bot is typing<span>.</span><span>.</span><span>.</span>';
+                chatbotBody.appendChild(typingIndicator);
+                typingIndicator.style.display = 'block';
+                chatbotBody.scrollTop = chatbotBody.scrollHeight;
+
+                // Simulate delay for bot response
+                await new Promise(resolve => setTimeout(resolve, 1000));
+
+                // Get bot response
+                const response = getBotResponse(message);
+                typingIndicator.remove();
+
+                response.text.forEach(text => {
+                    const botMessage = document.createElement('div');
+                    botMessage.className = 'chatbot-message bot-message';
+                    botMessage.textContent = text;
+                    botMessage.innerHTML += `<div class="message-timestamp">${new Date().toLocaleTimeString()}</div>`;
+                    chatbotBody.appendChild(botMessage);
+                    speakText(text); // Text-to-speech
+                });
+
+                // Add image if available
+                if (response.image) {
+                    const botImage = document.createElement('img');
+                    botImage.className = 'bot-image';
+                    botImage.src = response.image;
+                    botImage.alt = 'Tea Product';
+                    chatbotBody.appendChild(botImage);
+                }
+
+                // Add carousel for product queries
+                if (response.carousel) {
+                    const carousel = document.createElement('div');
+                    carousel.className = 'carousel';
+                    response.carousel.forEach(item => {
+                        const img = document.createElement('img');
+                        img.src = item.image;
+                        img.alt = item.name;
+                        img.onclick = () => sendQuickMessage(`Show me ${item.name}`);
+                        carousel.appendChild(img);
+                    });
+                    chatbotBody.appendChild(carousel);
+                }
+
+                // Clear input and scroll to bottom
+                input.value = '';
+                chatbotBody.scrollTop = chatbotBody.scrollHeight;
             }
+        }
+
+        // Send quick button message
+        function sendQuickMessage(message) {
+            document.getElementById('user-input').value = message;
+            sendMessage();
+        }
+
+        // Handle image upload
+        function handleImageUpload(event) {
+            const file = event.target.files[0];
+            if (file && file.type.startsWith('image/') && file.size <= 5 * 1024 * 1024) {
+                const chatbotBody = document.getElementById('chatbot-body');
+                const reader = new FileReader();
+
+                reader.onload = function(e) {
+                    // Display user-uploaded image
+                    const userImage = document.createElement('img');
+                    userImage.className = 'user-image';
+                    userImage.src = e.target.result;
+                    userImage.alt = 'User Uploaded Image';
+                    chatbotBody.appendChild(userImage);
+                    userImage.innerHTML += `<div class="message-timestamp">${new Date().toLocaleTimeString()}</div>`;
+
+                    // Bot response
+                    const botMessage = document.createElement('div');
+                    botMessage.className = 'chatbot-message bot-message';
+                    botMessage.textContent = 'Thanks for uploading the image! It looks like an order receipt. Please provide the order number for further assistance.';
+                    botMessage.innerHTML += `<div class="message-timestamp">${new Date().toLocaleTimeString()}</div>`;
+                    chatbotBody.appendChild(botMessage);
+                    speakText(botMessage.textContent);
+
+                    chatbotBody.scrollTop = chatbotBody.scrollHeight;
+                };
+
+                reader.readAsDataURL(file);
+            } else {
+                alert('Please upload an image file under 5MB.');
+            }
+            event.target.value = '';
+        }
+
+        // Handle document upload
+        function handleDocumentUpload(event) {
+            const file = event.target.files[0];
+            if (file && file.type === 'application/pdf' && file.size <= 5 * 1024 * 1024) {
+                const chatbotBody = document.getElementById('chatbot-body');
+
+                // Display document link
+                const userDocument = document.createElement('div');
+                userDocument.className = 'user-document';
+                userDocument.innerHTML = `<a href="${URL.createObjectURL(file)}" target="_blank">${file.name}</a>`;
+                userDocument.innerHTML += `<div class="message-timestamp">${new Date().toLocaleTimeString()}</div>`;
+                chatbotBody.appendChild(userDocument);
+
+                // Bot response
+                const botMessage = document.createElement('div');
+                botMessage.className = 'chatbot-message bot-message';
+                botMessage.textContent = `Received your document (${file.name}). I’ll process it and get back to you. Need help with anything else?`;
+                botMessage.innerHTML += `<div class="message-timestamp">${new Date().toLocaleTimeString()}</div>`;
+                chatbotBody.appendChild(botMessage);
+                speakText(botMessage.textContent);
+
+                chatbotBody.scrollTop = chatbotBody.scrollHeight;
+            } else {
+                alert('Please upload a PDF file under 5MB.');
+            }
+            event.target.value = '';
+        }
+
+        // Export chat history
+        function exportChat() {
+            const chatbotBody = document.getElementById('chatbot-body');
+            const messages = chatbotBody.querySelectorAll('.chatbot-message, .user-document');
+            let chatContent = 'Chanuk Tea Chat History\n\n';
+            messages.forEach(msg => {
+                const timestamp = msg.querySelector('.message-timestamp')?.textContent || '';
+                const text = msg.textContent.replace(timestamp, '').trim();
+                chatContent += `[${timestamp}] ${msg.classList.contains('user-message') ? 'You' : 'Bot'}: ${text}\n`;
+            });
+            const blob = new Blob([chatContent], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'chanuk_tea_chat_history.txt';
+            a.click();
+            URL.revokeObjectURL(url);
+            toggleSettings();
+        }
+
+        // Basic rule-based response logic with images and carousel
+        function getBotResponse(message) {
+            const lowerMessage = message.toLowerCase();
+            let response = { text: [], image: null, carousel: null };
+
+            if (lowerMessage.includes('green tea')) {
+                response.text = ['Our Green Tea is refreshing and antioxidant-rich! Perfect for a morning boost.'];
+                response.image = 'https://images.unsplash.com/photo-1624283603632-6c0e7156318e?ixlib=rb-4.0.3&auto=format&fit=crop&w=300';
+            } else if (lowerMessage.includes('black tea')) {
+                response.text = ['Our Black Tea is bold and flavorful. Great with a dash of milk or honey!'];
+                response.image = 'https://images.unsplash.com/photo-1605807644960-86893e0d2e86?ixlib=rb-4.0.3&auto=format&fit=crop&w=300';
+            } else if (lowerMessage.includes('herbal tea')) {
+                response.text = ['Try our Herbal Tea blends, like chamomile or peppermint, for a soothing experience.'];
+                response.image = 'https://images.unsplash.com/photo-1545441147-6ef281dd30c4?ixlib=rb-4.0.3&auto=format&fit=crop&w=300';
+            } else if (lowerMessage.includes('order')) {
+                response.text = ['Please provide your order number or upload an order receipt, and I’ll check the status for you!'];
+            } else if (lowerMessage.includes('show teas') || lowerMessage.includes('products')) {
+                response.text = ['Check out our tea collection below!'];
+                response.carousel = [
+                    { name: 'Green Tea', image: 'https://images.unsplash.com/photo-1624283603632-6c0e7156318e?ixlib=rb-4.0.3&auto=format&fit=crop&w=120' },
+                    { name: 'Black Tea', image: 'https://images.unsplash.com/photo-1605807644960-86893e0d2e86?ixlib=rb-4.0.3&auto=format&fit=crop&w=120' },
+                    { name: 'Herbal Tea', image: 'https://images.unsplash.com/photo-1545441147-6ef281dd30c4?ixlib=rb-4.0.3&auto=format&fit=crop&w=120' }
+                ];
+            } else {
+                response.text = ['I’m here to help with all things tea! Ask about our products, upload a receipt, or check order status.'];
+            }
+            return response;
+        }
+
+        // Text-to-speech
+        function speakText(text) {
+            if ('speechSynthesis' in window) {
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = 'en-US';
+                utterance.volume = 1;
+                utterance.rate = 1;
+                utterance.pitch = 1;
+                window.speechSynthesis.speak(utterance);
+            }
+        }
+
+        // Speech-to-text
+        let recognition = null;
+        function toggleVoice() {
+            if (!('webkitSpeechRecognition' in window)) {
+                alert('Sorry, your browser does not support speech recognition.');
+                return;
+            }
+
+            if (!recognition) {
+                recognition = new webkitSpeechRecognition();
+                recognition.lang = 'en-US';
+                recognition.interimResults = false;
+                recognition.maxAlternatives = 1;
+
+                recognition.onresult = function(event) {
+                    const transcript = event.results[0][0].transcript;
+                    document.getElementById('user-input').value = transcript;
+                    sendMessage();
+                };
+
+                recognition.onerror = function(event) {
+                    console.error('Speech recognition error:', event.error);
+                };
+
+                recognition.onend = function() {
+                    recognition = null;
+                };
+
+                recognition.start();
+            } else {
+                recognition.stop();
+                recognition = null;
+            }
+        }
+
+        // Send message on Enter key
+        document.getElementById('user-input').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') sendMessage();
         });
     </script>
 </body>
